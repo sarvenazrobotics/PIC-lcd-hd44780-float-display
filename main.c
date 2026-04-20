@@ -28,4 +28,8 @@ int main(void) {
     ADCON0=0;
     ADCON1=0x0F;
     
+    OpenXLCD(FOUR_BIT & LINES_5X7);
+    while(BusyXLCD());
+    WriteCmdXLCD(BLINK_ON & CURSOR_ON);
+    
 }
