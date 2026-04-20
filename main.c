@@ -38,6 +38,16 @@ int main(void) {
         
         b=(unsigned int)(data*1000);
         b= b%1000;
+        
+        
+        itoa((int)data,str);
+        putsXLCD("data=");
+        putsXLCD(str);
+        putsXLCD('.');
+        itoa(b,str);
+        putsXLCD(str);
+        
+        Delay10KTCYx(100);
     
     
     }
