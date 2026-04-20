@@ -10,10 +10,10 @@
 #define _XTAL_FREQ 8000000UL
 
 // LCD Pins
-#define LCD_RS  RB2
-#define LCD_RW  RB3
-#define LCD_EN  RB4
-#define LCD_DATA PORTD
+#define LCD_RS  LATBbits.LATB2
+#define LCD_RW  LATBbits.LATB3
+#define LCD_EN  LATBbits.LATB4
+#define LCD_DATA LATD
 
 void LCD_Delay() { __delay_us(20); }
 
