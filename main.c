@@ -25,4 +25,7 @@ int main(void) {
     
     OSCCONbits.IRCF=0b111;
     while(OSCCONbits.IOFS==0);
+    ADCON0=0;
+    ADCON1=0x0F;
+    
 }
