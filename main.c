@@ -32,4 +32,11 @@ int main(void) {
     while(BusyXLCD());
     WriteCmdXLCD(BLINK_ON & CURSOR_ON);
     
+    while(1){
+        WriteCmdXLCD(1);
+        while(BusyXLCD());
+    
+    
+    }
+    
 }
