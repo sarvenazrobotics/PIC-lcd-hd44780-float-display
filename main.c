@@ -19,5 +19,10 @@
 #define _XTAL_FREQ 8000000UL
 
 int main(void) {
-    return 0;
+    unsigned int b;
+    float data=12.798;
+    char str[5];
+    
+    OSCCONbits.IRCF=0b111;
+    while(OSCCONbits.IOFS==0);
 }
