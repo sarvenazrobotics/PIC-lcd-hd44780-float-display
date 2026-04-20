@@ -16,6 +16,8 @@
 #pragma config MCLRE=ON
 #pragma config PBADEN=OFF
 
+#define _XTAL_FREQ 8000000UL
+
 int main(void) {
     return 0;
 }
