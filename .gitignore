@@ -1,0 +1,21 @@
+*.atsln
+*.cbi
+*.cci
+*.cproj
+*.cof
+*.cproj
+*.fct
+*.prj
+*.txt
+*.prj
+*.prj~
+*.c~
+# Build folders
+Debug/
+Release/
+.generated_files/
+dist/
+nbproject/
+build/
+debug/
+Makefile/
