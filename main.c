@@ -35,6 +35,9 @@ int main(void) {
     while(1){
         WriteCmdXLCD(1);
         while(BusyXLCD());
+        
+        b=(unsigned int)(data*1000);
+        b= b%1000;
     
     
     }
