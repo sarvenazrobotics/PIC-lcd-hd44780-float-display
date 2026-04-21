@@ -1,133 +1,102 @@
 #include <xc.h>
-#include <stdio.h>
 
-#pragma config FOSC = INTOSCIO_EC
+// PIC18F4550 CORRECT Configuration Bits
+#pragma config FOSC = INTOSC_HS
 #pragma config WDT = OFF
 #pragma config LVP = OFF
 #pragma config MCLRE = ON
 #pragma config PBADEN = OFF
+#pragma config PWRT = OFF
+#pragma config BOR = OFF
+#pragma config XINST = OFF
+#pragma config DEBUG = OFF
 
 #define _XTAL_FREQ 8000000UL
 
-// LCD Pins
-#define LCD_RS  LATBbits.LATB2
-#define LCD_RW  LATBbits.LATB3
-#define LCD_EN  LATBbits.LATB4
-#define LCD_DATA LATD
+// LCD Pins - YOUR ACTUAL WIRING
+#define LCD_RS LATBbits.LATB5    // RS on RB5
+#define LCD_EN LATBbits.LATB4    // EN on RB4
 
-void LCD_Delay() { __delay_us(20); }
+// Data pins (4-bit mode) - D4 on RB0, D5 on RB1, D6 on RB2, D7 on RB3
+#define LCD_D4 LATBbits.LATB0
+#define LCD_D5 LATBbits.LATB1
+#define LCD_D6 LATBbits.LATB2
+#define LCD_D7 LATBbits.LATB3
+
+void LCD_WriteNibble(unsigned char nibble, unsigned char rs) {
+    LCD_RS = rs;
+    LCD_D4 = (nibble >> 0) & 1;
+    LCD_D5 = (nibble >> 1) & 1;
+    LCD_D6 = (nibble >> 2) & 1;
+    LCD_D7 = (nibble >> 3) & 1;
+    LCD_EN = 1;
+    __delay_us(2);
+    LCD_EN = 0;
+    __delay_us(50);
+}
 
 void LCD_Cmd(unsigned char cmd) {
-    TRISD = 0x00; 
-    TRISBbits.TRISB2 = 0; 
-    TRISBbits.TRISB3 = 0; 
-    TRISBbits.TRISB4 = 0;
-    
-    LCD_RS = 0; LCD_RW = 0;
-    LCD_DATA = (LCD_DATA & 0x0F) | (cmd & 0xF0);
-    LCD_EN = 1; LCD_Delay(); LCD_EN = 0;
-    LCD_DATA = (LCD_DATA & 0x0F) | ((cmd << 4) & 0xF0);
-    LCD_EN = 1; LCD_Delay(); LCD_EN = 0;
-    __delay_ms(2);
+    LCD_WriteNibble(cmd >> 4, 0);   // Send high nibble
+    LCD_WriteNibble(cmd & 0x0F, 0); // Send low nibble
+    if(cmd == 0x01 || cmd == 0x02) 
+        __delay_ms(2);
+    else 
+        __delay_us(100);
 }
 
 void LCD_Char(char data) {
-    TRISD = 0x00; 
-    TRISBbits.TRISB2 = 0; 
-    TRISBbits.TRISB3 = 0; 
-    TRISBbits.TRISB4 = 0;
-    
-    LCD_RS = 1; LCD_RW = 0;
-    LCD_DATA = (LCD_DATA & 0x0F) | (data & 0xF0);
-    LCD_EN = 1; LCD_Delay(); LCD_EN = 0;
-    LCD_DATA = (LCD_DATA & 0x0F) | ((data << 4) & 0xF0);
-    LCD_EN = 1; LCD_Delay(); LCD_EN = 0;
+    LCD_WriteNibble(data >> 4, 1);  // Send high nibble
+    LCD_WriteNibble(data & 0x0F, 1); // Send low nibble
 }
 
-void LCD_String(char *str) {
-    while(*str) LCD_Char(*str++);
+void LCD_String(const char *str) {
+    while(*str) 
+        LCD_Char(*str++);
 }
 
-void LCD_Init() {
-    __delay_ms(20);
-    LCD_Cmd(0x33); 
-    LCD_Cmd(0x32);
-    LCD_Cmd(0x28); 
-    LCD_Cmd(0x0C); 
-    LCD_Cmd(0x06); 
-    LCD_Cmd(0x01);
-}
-
-// ? Custom integer to string conversion (replaces itoa)
-void IntToString(unsigned int num, char *str) {
-    unsigned int i = 0;
-    unsigned int temp;
+void LCD_Init(void) {
+    __delay_ms(50);
     
-    if(num == 0) {
-        str[0] = '0';
-        str[1] = '\0';
-        return;
-    }
+    // Initialize to 4-bit mode
+    LCD_WriteNibble(0x03, 0); __delay_ms(5);
+    LCD_WriteNibble(0x03, 0); __delay_us(200);
+    LCD_WriteNibble(0x03, 0); __delay_us(200);
+    LCD_WriteNibble(0x02, 0); __delay_us(200);
     
-    // Convert number to string (reversed)
-    while(num > 0) {
-        temp = num % 10;
-        str[i++] = temp + '0';
-        num = num / 10;
-    }
-    str[i] = '\0';
-    
-    // Reverse the string
-    unsigned int j = 0;
-    i--;
-    while(j < i) {
-        temp = str[j];
-        str[j] = str[i];
-        str[i] = temp;
-        j++;
-        i--;
-    }
+    // Configure LCD
+    LCD_Cmd(0x28);  // 4-bit, 2 lines, 5x8 dots
+    LCD_Cmd(0x0C);  // Display ON, cursor OFF, blink OFF
+    LCD_Cmd(0x06);  // Entry mode: increment, no shift
+    LCD_Cmd(0x01);  // Clear display
+    __delay_ms(5);
 }
 
 void main(void) {
-    unsigned int b;
-    float data = 12.345;
-    char str[6];
+    // Setup internal oscillator to 8MHz
+    OSCCONbits.IRCF = 0b111;  // 8MHz
+    OSCCONbits.SCS = 0b10;    // Use internal oscillator
+    while(!OSCCONbits.IOFS);   // Wait for oscillator stable
     
-    // Configure oscillator
-    OSCCONbits.IRCF = 0b111;  // 8 MHz
-    while(OSCCONbits.IOFS == 0);
+    // Configure all pins as digital
+    ADCON1 = 0x0F;     // Set all ports as digital
     
-    // All pins digital
-    ADCON1 = 0x0F;
+    // Configure TRIS registers for your pins
+    TRISBbits.TRISB5 = 0;  // RB5 as output (RS)
+    TRISBbits.TRISB4 = 0;  // RB4 as output (EN)
+    TRISBbits.TRISB3 = 0;  // RB3 as output (D7)
+    TRISBbits.TRISB2 = 0;  // RB2 as output (D6)
+    TRISBbits.TRISB1 = 0;  // RB1 as output (D5)
+    TRISBbits.TRISB0 = 0;  // RB0 as output (D4)
     
     // Initialize LCD
     LCD_Init();
     
+    // Display message
+    LCD_String("HELLO WORLD!");
+    
+    // Main loop
     while(1) {
-        LCD_Cmd(0x01);  // Clear LCD
-        
-        // Calculate parts
-        unsigned int intPart = (unsigned int)data;
-        b = (unsigned int)((data - intPart) * 1000);
-        
-        // Display "data="
-        LCD_String("data=");
-        
-        // Display integer part
-        IntToString(intPart, str);
-        LCD_String(str);
-        
-        // Display decimal point
-        LCD_Char('.');
-        
-        // Display decimal part with leading zeros
-        if(b < 100) LCD_Char('0');
-        if(b < 10) LCD_Char('0');
-        IntToString(b, str);
-        LCD_String(str);
-        
-        // ? Use __delay_ms instead of Delay10KTCYx
+        // Your main code here
         __delay_ms(1000);
     }
 }
