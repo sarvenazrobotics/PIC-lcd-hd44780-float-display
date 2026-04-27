@@ -13,21 +13,9 @@ This project demonstrates how to interface a 16x2 LCD (LM016L) with PIC18F4550 m
 
  - Breadboard and Jumper Wires
 
-## wiring Diagram
-PIC18F4550                    LCD LM016L
-┌──────────┐                  ┌──────────┐
-│    RB5   ├──────────────────┤ RS (Pin4)│
-│    RB4   ├──────────────────┤ E  (Pin6)│
-│    RB3   ├──────────────────┤ D7 (Pin14)│
-│    RB2   ├──────────────────┤ D6 (Pin13)│
-│    RB1   ├──────────────────┤ D5 (Pin12)│
-│    RB0   ├──────────────────┤ D4 (Pin11)│
-│    GND   ├──────────────────┤ RW (Pin5) │
-│    GND   ├──────────────────┤ VSS(Pin1) │
-│    +5V   ├──────────────────┤ VDD(Pin2) │
-└──────────┘                  └──────────┘
-                                    │
-                              ┌─────┴─────┐
-                              │ 10k POT   │
-                              │  VEE(Pin3)│
-                              └───────────┘
+## Software Requirements
+- MPLAB X IDE (v6.00 or later)
+
+- XC8 Compiler (v2.00 or later)
+
+- Proteus (for simulation, optional)
