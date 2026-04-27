@@ -39,3 +39,10 @@ RW Pin:	Ensure RW (pin 5) is connected to GND
 - Batch commands when possible
 
 - Use __delay_us() for short delays to save CPU time
+
+Resources
+- PIC18F4550 Datasheet
+
+- HD44780 LCD Datasheet
+
+- MPLAB X IDE Documentation
