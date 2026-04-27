@@ -19,3 +19,12 @@ This project demonstrates how to interface a 16x2 LCD (LM016L) with PIC18F4550 m
 - XC8 Compiler (v2.00 or later)
 
 - Proteus (for simulation, optional)
+
+
+## Troubleshooting Guide
+LCD Shows Nothing
+
+Contrast:	Adjust potentiometer (VEE pin)
+Power	Check: +5V and GND connections
+Backlight: Verify LCD pins 15 and 16
+RW Pin:	Ensure RW (pin 5) is connected to GND
