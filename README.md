@@ -28,3 +28,14 @@ Contrast:	Adjust potentiometer (VEE pin)
 Power	Check: +5V and GND connections
 Backlight: Verify LCD pins 15 and 16
 RW Pin:	Ensure RW (pin 5) is connected to GND
+
+## Performance Tips
+- Use 4-bit mode to save I/O pins (same as this project)
+
+- Minimize delay_ms() calls in interrupt contexts
+
+- Store strings in ROM using const keyword
+
+- Batch commands when possible
+
+- Use __delay_us() for short delays to save CPU time
