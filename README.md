@@ -46,3 +46,15 @@ RW Pin:	Ensure RW (pin 5) is connected to GND
 - HD44780 LCD Datasheet
 
 - MPLAB X IDE Documentation
+
+## License
+This project is open-source and available under the MIT License.
+
+## Support
+For issues and questions:
+
+Check the Troubleshooting section
+
+Verify wiring connections
+
+Ensure proper power supply
